@@ -128,6 +128,8 @@ func RegisterScenarios() error {
 		RestoreV206,
 		// KeymanagerUpgrade test.
 		KeymanagerUpgrade,
+		// Consensus state sync.
+		ConsensusStateSync,
 	} {
 		if err := cmd.Register(s); err != nil {
 			return err
