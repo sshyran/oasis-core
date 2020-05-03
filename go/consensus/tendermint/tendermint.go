@@ -1255,7 +1255,7 @@ func (t *tendermintService) syncWorker() {
 			}
 		}()
 
-		return t.node.ConsensusReactor().FastSync(), nil
+		return t.node.ConsensusReactor().WaitSync(), nil
 	}
 
 	for {

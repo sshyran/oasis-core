@@ -7,7 +7,7 @@ replace (
 	// https://github.com/spf13/cobra/issues/1091
 	github.com/gorilla/websocket => github.com/gorilla/websocket v1.4.2
 
-	github.com/tendermint/tendermint => github.com/oasislabs/tendermint v0.33.4-oasis1
+	github.com/tendermint/tendermint => github.com/oasislabs/tendermint v0.32.0-dev2.0.20200521124615-56acc21c3123
 	golang.org/x/crypto/curve25519 => github.com/oasislabs/ed25519/extra/x25519 v0.0.0-20191022155220-a426dcc8ad5f
 	golang.org/x/crypto/ed25519 => github.com/oasislabs/ed25519 v0.0.0-20191109133925-b197a691e30d
 )
@@ -29,7 +29,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.2.0
 	github.com/glycerine/goconvey v0.0.0-20190410193231-58a59202ab31 // indirect
 	github.com/go-kit/kit v0.10.0
-	github.com/golang/protobuf v1.4.0
+	github.com/golang/protobuf v1.4.2
 	github.com/golang/snappy v0.0.1
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4
@@ -42,9 +42,9 @@ require (
 	github.com/oasislabs/deoxysii v0.0.0-20190807103041-6159f99c2236
 	github.com/oasislabs/ed25519 v0.0.0-20191122104632-9d9ffc15f526
 	github.com/opentracing/opentracing-go v1.1.0
-	github.com/prometheus/client_golang v1.5.1
+	github.com/prometheus/client_golang v1.6.0
 	github.com/prometheus/common v0.9.1
-	github.com/prometheus/procfs v0.0.8
+	github.com/prometheus/procfs v0.0.11
 	github.com/remyoudompheng/bigfft v0.0.0-20190512091148-babf20351dd7 // indirect
 	github.com/seccomp/libseccomp-golang v0.9.1
 	github.com/smartystreets/assertions v1.0.0 // indirect
@@ -68,7 +68,7 @@ require (
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a
 	google.golang.org/grpc v1.29.1
 	google.golang.org/grpc/security/advancedtls v0.0.0-20200504170109-c8482678eb49
-	google.golang.org/protobuf v1.21.0
+	google.golang.org/protobuf v1.23.0
 )
 
 go 1.13
