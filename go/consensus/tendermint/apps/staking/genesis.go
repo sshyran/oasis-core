@@ -6,7 +6,6 @@ import (
 
 	"github.com/tendermint/tendermint/abci/types"
 
-	"github.com/oasislabs/oasis-core/go/common/crypto/signature"
 	"github.com/oasislabs/oasis-core/go/common/quantity"
 	abciAPI "github.com/oasislabs/oasis-core/go/consensus/tendermint/api"
 	stakingState "github.com/oasislabs/oasis-core/go/consensus/tendermint/apps/staking/state"
@@ -292,7 +291,7 @@ func (sq *stakingQuerier) Genesis(ctx context.Context) (*staking.Genesis, error)
 	if err != nil {
 		return nil, err
 	}
-	ledger := make(map[signature.PublicKey]*staking.Account)
+	ledger := make(map[staking.Address]*staking.Account)
 	for _, acctID := range accounts {
 		var acct *staking.Account
 		acct, err = sq.state.Account(ctx, acctID)

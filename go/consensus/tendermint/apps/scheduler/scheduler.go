@@ -30,6 +30,7 @@ import (
 	epochtime "github.com/oasislabs/oasis-core/go/epochtime/api"
 	registry "github.com/oasislabs/oasis-core/go/registry/api"
 	scheduler "github.com/oasislabs/oasis-core/go/scheduler/api"
+	staking "github.com/oasislabs/oasis-core/go/staking/api"
 )
 
 var (
@@ -194,9 +195,13 @@ func (app *schedulerApplication) BeginBlock(ctx *api.Context, request types.Requ
 		)
 
 		if entitiesEligibleForReward != nil {
-			accounts := publicKeyMapToSortedSlice(entitiesEligibleForReward)
+			accountAddrs := []staking.Address{}
+			for _, entity := range publicKeyMapToSortedSlice(entitiesEligibleForReward) {
+				accountAddrs = append(accountAddrs, staking.NewFromPublicKey(entity))
+			}
+
 			stakingSt := stakingState.NewMutableState(ctx.State())
-			if err = stakingSt.AddRewards(ctx, epoch, &params.RewardFactorEpochElectionAny, accounts); err != nil {
+			if err = stakingSt.AddRewards(ctx, epoch, &params.RewardFactorEpochElectionAny, accountAddrs); err != nil {
 				return fmt.Errorf("tendermint/scheduler: failed to add rewards: %w", err)
 			}
 		}
@@ -428,8 +433,9 @@ func (app *schedulerApplication) electCommittee(
 
 	for _, n := range nodes {
 		// Check if an entity has enough stake.
+		acctAddr := staking.NewFromPublicKey(n.EntityID)
 		if stakeAcc != nil {
-			if err = stakeAcc.CheckStakeClaims(n.EntityID); err != nil {
+			if err = stakeAcc.CheckStakeClaims(acctAddr); err != nil {
 				continue
 			}
 		}
@@ -554,7 +560,8 @@ func (app *schedulerApplication) electValidators(
 			continue
 		}
 		if stakeAcc != nil {
-			if err := stakeAcc.CheckStakeClaims(n.EntityID); err != nil {
+			acctAddr := staking.NewFromPublicKey(n.EntityID)
+			if err := stakeAcc.CheckStakeClaims(acctAddr); err != nil {
 				continue
 			}
 		}
@@ -621,13 +628,20 @@ electLoop:
 				power = 1
 			} else {
 				var stake *quantity.Quantity
-				stake, err = stakeAcc.GetEscrowBalance(v)
+				acctAddr := staking.NewFromPublicKey(v)
+				stake, err = stakeAcc.GetEscrowBalance(acctAddr)
 				if err != nil {
-					return fmt.Errorf("failed to fetch escrow balance for entity %s: %w", v, err)
+					return fmt.Errorf(
+						"failed to fetch escrow balance for entity %s with account %s: %w",
+						v, acctAddr, err,
+					)
 				}
 				power, err = scheduler.VotingPowerFromTokens(stake)
 				if err != nil {
-					return fmt.Errorf("computing voting power for entity %s with balance %v: %w", v, stake, err)
+					return fmt.Errorf(
+						"computing voting power for entity %s with balance %v: %w",
+						v, stake, err,
+					)
 				}
 			}
 
@@ -683,12 +697,14 @@ func publicKeyMapToSliceByStake(
 	// Stable-sort the shuffled slice by descending escrow balance.
 	var balanceErr error
 	sort.SliceStable(entities, func(i, j int) bool {
-		iBal, err := stakeAcc.GetEscrowBalance(entities[i])
+		iAcctAddr := staking.NewFromPublicKey(entities[i])
+		iBal, err := stakeAcc.GetEscrowBalance(iAcctAddr)
 		if err != nil {
 			balanceErr = err
 			return false
 		}
-		jBal, err := stakeAcc.GetEscrowBalance(entities[j])
+		jAcctAddr := staking.NewFromPublicKey(entities[j])
+		jBal, err := stakeAcc.GetEscrowBalance(jAcctAddr)
 		if err != nil {
 			balanceErr = err
 			return false

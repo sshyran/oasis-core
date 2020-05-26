@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/oasislabs/oasis-core/go/common"
-	"github.com/oasislabs/oasis-core/go/common/crypto/signature"
 	"github.com/oasislabs/oasis-core/go/common/quantity"
 	abciAPI "github.com/oasislabs/oasis-core/go/consensus/tendermint/api"
 	keymanagerState "github.com/oasislabs/oasis-core/go/consensus/tendermint/apps/keymanager/state"
@@ -266,15 +265,15 @@ func checkStakeClaims(ctx *abciAPI.Context, now epochtime.EpochTime) error {
 		return fmt.Errorf("failed to get runtime registrations: %w", err)
 	}
 	// Get staking accounts.
-	accounts := make(map[signature.PublicKey]*staking.Account)
-	accountIDs, err := stakingSt.Accounts(ctx)
+	accounts := make(map[staking.Address]*staking.Account)
+	addresses, err := stakingSt.Accounts(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get staking accounts: %w", err)
 	}
-	for _, id := range accountIDs {
-		accounts[id], err = stakingSt.Account(ctx, id)
+	for _, addr := range addresses {
+		accounts[addr], err = stakingSt.Account(ctx, addr)
 		if err != nil {
-			return fmt.Errorf("failed to get staking account with id %s: %w", id, err)
+			return fmt.Errorf("failed to get staking account %s: %w", addr, err)
 		}
 	}
 

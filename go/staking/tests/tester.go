@@ -187,11 +187,11 @@ TransferWaitLoop:
 	for {
 		select {
 		case ev := <-ch:
-			if ev.From.Equal(api.CommonPoolAccountID) || ev.To.Equal(api.CommonPoolAccountID) {
+			if ev.From.Equal(api.CommonPoolAddress) || ev.To.Equal(api.CommonPoolAddress) {
 				gotCommon = true
 				continue
 			}
-			if ev.From.Equal(api.FeeAccumulatorAccountID) || ev.To.Equal(api.FeeAccumulatorAccountID) {
+			if ev.From.Equal(api.FeeAccumulatorAddress) || ev.To.Equal(api.FeeAccumulatorAddress) {
 				gotFeeAcc = true
 				continue
 			}
@@ -273,11 +273,11 @@ TransferWaitLoop:
 	for {
 		select {
 		case ev := <-ch:
-			if ev.From.Equal(api.CommonPoolAccountID) || ev.To.Equal(api.CommonPoolAccountID) {
+			if ev.From.Equal(api.CommonPoolAddress) || ev.To.Equal(api.CommonPoolAddress) {
 				gotCommon = true
 				continue
 			}
-			if ev.From.Equal(api.FeeAccumulatorAccountID) || ev.To.Equal(api.FeeAccumulatorAccountID) {
+			if ev.From.Equal(api.FeeAccumulatorAddress) || ev.To.Equal(api.FeeAccumulatorAddress) {
 				gotFeeAcc = true
 				continue
 			}

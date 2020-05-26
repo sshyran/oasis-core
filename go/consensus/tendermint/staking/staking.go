@@ -12,7 +12,6 @@ import (
 
 	"github.com/oasislabs/oasis-core/go/common/cbor"
 	"github.com/oasislabs/oasis-core/go/common/crypto/hash"
-	"github.com/oasislabs/oasis-core/go/common/crypto/signature"
 	"github.com/oasislabs/oasis-core/go/common/logging"
 	"github.com/oasislabs/oasis-core/go/common/pubsub"
 	"github.com/oasislabs/oasis-core/go/common/quantity"
@@ -82,7 +81,7 @@ func (tb *tendermintBackend) Threshold(ctx context.Context, query *api.Threshold
 	return q.Threshold(ctx, query.Kind)
 }
 
-func (tb *tendermintBackend) Accounts(ctx context.Context, height int64) ([]signature.PublicKey, error) {
+func (tb *tendermintBackend) Accounts(ctx context.Context, height int64) ([]api.Address, error) {
 	q, err := tb.querier.QueryAt(ctx, height)
 	if err != nil {
 		return nil, err
@@ -100,7 +99,7 @@ func (tb *tendermintBackend) AccountInfo(ctx context.Context, query *api.OwnerQu
 	return q.AccountInfo(ctx, query.Owner)
 }
 
-func (tb *tendermintBackend) Delegations(ctx context.Context, query *api.OwnerQuery) (map[signature.PublicKey]*api.Delegation, error) {
+func (tb *tendermintBackend) Delegations(ctx context.Context, query *api.OwnerQuery) (map[api.Address]*api.Delegation, error) {
 	q, err := tb.querier.QueryAt(ctx, query.Height)
 	if err != nil {
 		return nil, err
@@ -109,7 +108,7 @@ func (tb *tendermintBackend) Delegations(ctx context.Context, query *api.OwnerQu
 	return q.Delegations(ctx, query.Owner)
 }
 
-func (tb *tendermintBackend) DebondingDelegations(ctx context.Context, query *api.OwnerQuery) (map[signature.PublicKey][]*api.DebondingDelegation, error) {
+func (tb *tendermintBackend) DebondingDelegations(ctx context.Context, query *api.OwnerQuery) (map[api.Address][]*api.DebondingDelegation, error) {
 	q, err := tb.querier.QueryAt(ctx, query.Height)
 	if err != nil {
 		return nil, err

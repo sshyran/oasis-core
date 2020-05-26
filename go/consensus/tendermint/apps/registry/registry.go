@@ -18,6 +18,7 @@ import (
 	stakingState "github.com/oasislabs/oasis-core/go/consensus/tendermint/apps/staking/state"
 	epochtime "github.com/oasislabs/oasis-core/go/epochtime/api"
 	registry "github.com/oasislabs/oasis-core/go/registry/api"
+	staking "github.com/oasislabs/oasis-core/go/staking/api"
 )
 
 var _ abci.Application = (*registryApplication)(nil)
@@ -190,7 +191,8 @@ func (app *registryApplication) onRegistryEpochChanged(ctx *api.Context, registr
 
 			// Remove the stake claim for the given node.
 			if !params.DebugBypassStake {
-				if err = stakeAcc.RemoveStakeClaim(node.EntityID, registry.StakeClaimForNode(node.ID)); err != nil {
+				acctAddr := staking.NewFromPublicKey(node.EntityID)
+				if err = stakeAcc.RemoveStakeClaim(acctAddr, registry.StakeClaimForNode(node.ID)); err != nil {
 					return fmt.Errorf("registry: onRegistryEpochChanged: couldn't remove stake claim: %w", err)
 				}
 			}

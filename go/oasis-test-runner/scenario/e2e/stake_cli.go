@@ -394,10 +394,10 @@ func (s *stakeCLIImpl) listAccounts(childEnv *env.Env) ([]signature.PublicKey, e
 }
 
 func (s *stakeCLIImpl) getAccountInfo(childEnv *env.Env, src signature.PublicKey) (*api.Account, error) {
-	s.logger.Info("checking account balance", stake.CfgAccountID, src.String())
+	s.logger.Info("checking account balance", stake.CfgAccountAddr, src.String())
 	args := []string{
 		"stake", "account", "info",
-		"--" + stake.CfgAccountID, src.String(),
+		"--" + stake.CfgAccountAddr, src.String(),
 		"--" + grpc.CfgAddress, "unix:" + s.runtimeImpl.net.Validators()[0].SocketPath(),
 	}
 
