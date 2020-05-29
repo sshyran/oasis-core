@@ -93,9 +93,9 @@ type Backend interface {
 	// Threshold returns the specific staking threshold by kind.
 	Threshold(ctx context.Context, query *ThresholdQuery) (*quantity.Quantity, error)
 
-	// Accounts returns the addresses of all accounts with a non-zero general or
-	// escrow balance.
-	Accounts(ctx context.Context, height int64) ([]Address, error)
+	// Addresses returns the addresses of all accounts with a non-zero general
+	// or escrow balance.
+	Addresses(ctx context.Context, height int64) ([]Address, error)
 
 	// AccountInfo returns the account descriptor for the given account.
 	AccountInfo(ctx context.Context, query *OwnerQuery) (*Account, error)

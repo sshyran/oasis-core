@@ -81,13 +81,13 @@ func (tb *tendermintBackend) Threshold(ctx context.Context, query *api.Threshold
 	return q.Threshold(ctx, query.Kind)
 }
 
-func (tb *tendermintBackend) Accounts(ctx context.Context, height int64) ([]api.Address, error) {
+func (tb *tendermintBackend) Addresses(ctx context.Context, height int64) ([]api.Address, error) {
 	q, err := tb.querier.QueryAt(ctx, height)
 	if err != nil {
 		return nil, err
 	}
 
-	return q.Accounts(ctx)
+	return q.Addresses(ctx)
 }
 
 func (tb *tendermintBackend) AccountInfo(ctx context.Context, query *api.OwnerQuery) (*api.Account, error) {

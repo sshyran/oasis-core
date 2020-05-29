@@ -217,14 +217,14 @@ func handlerAccounts( // nolint: golint
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(Backend).Accounts(ctx, height)
+		return srv.(Backend).Addresses(ctx, height)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
 		FullMethod: methodAccounts.FullName(),
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Backend).Accounts(ctx, req.(int64))
+		return srv.(Backend).Addresses(ctx, req.(int64))
 	}
 	return interceptor(ctx, height, info, handler)
 }
@@ -492,7 +492,7 @@ func (c *stakingClient) Threshold(ctx context.Context, query *ThresholdQuery) (*
 	return &rsp, nil
 }
 
-func (c *stakingClient) Accounts(ctx context.Context, height int64) ([]Address, error) {
+func (c *stakingClient) Addresses(ctx context.Context, height int64) ([]Address, error) {
 	var rsp []Address
 	if err := c.conn.Invoke(ctx, methodAccounts.FullName(), height, &rsp); err != nil {
 		return nil, err

@@ -172,9 +172,9 @@ func doList(cmd *cobra.Command, args []string) {
 	ctx := context.Background()
 
 	var addrs []api.Address
-	doWithRetries(cmd, "query accounts", func() error {
+	doWithRetries(cmd, "query addresses", func() error {
 		var err error
-		addrs, err = client.Accounts(ctx, consensus.HeightLatest)
+		addrs, err = client.Addresses(ctx, consensus.HeightLatest)
 		return err
 	})
 

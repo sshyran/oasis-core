@@ -122,19 +122,19 @@ func checkStaking(ctx *abciAPI.Context, now epochtime.EpochTime) error {
 	// Check if the total supply adds up (common pool + all balances in the ledger).
 	// Check all commission schedules.
 	var total quantity.Quantity
-	accounts, err := st.Accounts(ctx)
+	addresses, err := st.Addresses(ctx)
 	if err != nil {
-		return fmt.Errorf("Accounts: %w", err)
+		return fmt.Errorf("Addresses: %w", err)
 	}
 	var acct *staking.Account
-	for _, id := range accounts {
-		acct, err = st.Account(ctx, id)
+	for _, addr := range addresses {
+		acct, err = st.Account(ctx, addr)
 		if err != nil {
 			return fmt.Errorf("Account: %w", err)
 		}
-		err = staking.SanityCheckAccount(&total, parameters, now, id, acct)
+		err = staking.SanityCheckAccount(&total, parameters, now, addr, acct)
 		if err != nil {
-			return fmt.Errorf("SanityCheckAccount %s: %w", id, err)
+			return fmt.Errorf("SanityCheckAccount %s: %w", addr, err)
 		}
 	}
 
@@ -183,12 +183,12 @@ func checkStaking(ctx *abciAPI.Context, now epochtime.EpochTime) error {
 	}
 
 	// Check the above two invariants for each account as well.
-	for _, id := range accounts {
-		acct, err = st.Account(ctx, id)
+	for _, addr := range addresses {
+		acct, err = st.Account(ctx, addr)
 		if err != nil {
 			return fmt.Errorf("Account: %w", err)
 		}
-		if err = staking.SanityCheckAccountShares(id, acct, delegationses[id], debondingDelegationses[id]); err != nil {
+		if err = staking.SanityCheckAccountShares(addr, acct, delegationses[addr], debondingDelegationses[addr]); err != nil {
 			return err
 		}
 	}
@@ -266,9 +266,9 @@ func checkStakeClaims(ctx *abciAPI.Context, now epochtime.EpochTime) error {
 	}
 	// Get staking accounts.
 	accounts := make(map[staking.Address]*staking.Account)
-	addresses, err := stakingSt.Accounts(ctx)
+	addresses, err := stakingSt.Addresses(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to get staking accounts: %w", err)
+		return fmt.Errorf("failed to get staking addresses: %w", err)
 	}
 	for _, addr := range addresses {
 		accounts[addr], err = stakingSt.Account(ctx, addr)
