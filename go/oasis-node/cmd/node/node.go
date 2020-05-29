@@ -128,6 +128,7 @@ type Node struct {
 	RegistrationWorker         *registration.Worker
 	KeymanagerWorker           *workerKeymanager.Worker
 	ConsensusWorker            *workerConsensusRPC.Worker
+	readyCh                    chan struct{}
 }
 
 // Cleanup cleans up after the node has terminated.
@@ -167,8 +168,42 @@ func (n *Node) RequestShutdown() (<-chan struct{}, error) {
 }
 
 func (n *Node) Ready() <-chan struct{} {
-	// TODO
-	return make(chan struct{})
+	return n.readyCh
+}
+
+func (n *Node) WaitReady() error {
+	if err := n.NodeController.WaitSync(context.Background()); err != nil {
+		return err
+	}
+
+	// Wait for storage worker.
+	if n.StorageWorker.Enabled() {
+		<-n.StorageWorker.Initialized()
+	}
+
+	// Wait for executor worker.
+	if n.ExecutorWorker.Enabled() {
+		<-n.ExecutorWorker.Initialized()
+	}
+
+	// Wait for transaction scheduler.
+	if n.TransactionSchedulerWorker.Enabled() {
+		<-n.TransactionSchedulerWorker.Initialized()
+	}
+
+	// Wait for the merge worker.
+	if n.MergeWorker.Enabled() {
+		<-n.MergeWorker.Initialized()
+	}
+
+	// Wait for the common worker.
+	if n.CommonWorker.Enabled() {
+		<-n.CommonWorker.Initialized()
+	}
+
+	close(n.readyCh)
+
+	return nil
 }
 
 func (n *Node) RegistrationStopped() {
@@ -418,6 +453,13 @@ func (n *Node) startWorkers(logger *logging.Logger) error {
 		}
 	}
 
+	// Close readyCh once all workers and runtimes are initialized.
+	go func() {
+		if err := n.WaitReady(); err != nil {
+			logger.Error("failed waiting for ready channel", "err", err)
+		}
+	}()
+
 	return nil
 }
 
@@ -492,7 +534,8 @@ func newNode(testNode bool) (*Node, error) { // nolint: gocyclo
 	logger := cmdCommon.Logger()
 
 	node := &Node{
-		svcMgr: background.NewServiceManager(logger),
+		svcMgr:  background.NewServiceManager(logger),
+		readyCh: make(chan struct{}),
 	}
 
 	var startOk bool

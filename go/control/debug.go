@@ -62,11 +62,6 @@ Loop:
 	return nil
 }
 
-func (c *debugController) WaitNodesReady(ctx context.Context, count int) error {
-	// TODO
-	return nil
-}
-
 // New creates a new oasis-node debug controller.
 func NewDebug(consensus consensus.Backend) api.DebugController {
 	return &debugController{
