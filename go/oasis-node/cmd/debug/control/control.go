@@ -36,6 +36,18 @@ var (
 		Run:   doWaitNodes,
 	}
 
+	controlIsReadyCmd = &cobra.Command{
+		Use:   "is-ready",
+		Short: "exit with 0 if the node runtime is ready to accept workload, 1 if not",
+		Run:   doIsReady,
+	}
+
+	controlWaitReadyCmd = &cobra.Command{
+		Use:   "wait-ready",
+		Short: "wait for the node runtime to accept workload",
+		Run:   doWaitReady,
+	}
+
 	logger = logging.GetLogger("cmd/debug/control")
 )
 
@@ -88,6 +100,45 @@ func doWaitNodes(cmd *cobra.Command, args []string) {
 	}
 
 	logger.Info("enough nodes have been registered")
+}
+
+func doIsReady(cmd *cobra.Command, args []string) {
+	conn, _ := doConnect(cmd)
+	defer conn.Close()
+
+	logger.Debug("querying ready status")
+
+	// Use background context to block until the result comes in.
+	/*	synced, err := client.IsReady(context.Background())
+		if err != nil {
+			logger.Error("failed to query synced status",
+				"err", err,
+			)
+			os.Exit(128)
+		}
+		if synced {
+			fmt.Println("node completed initial syncing")
+			os.Exit(0)
+		} else {
+			fmt.Println("node has not completed initial syncing")
+			os.Exit(1)
+		}*/
+}
+
+func doWaitReady(cmd *cobra.Command, args []string) {
+	conn, _ := doConnect(cmd)
+	defer conn.Close()
+
+	logger.Debug("waiting for ready status")
+
+	// Use background context to block until the result comes in.
+	/*	err := client.WaitReady(context.Background())
+		if err != nil {
+			logger.Error("failed to wait for sync status",
+				"err", err,
+			)
+			os.Exit(1)
+		}*/
 }
 
 // Register registers the dummy sub-command and all of its children.

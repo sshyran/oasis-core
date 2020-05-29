@@ -52,6 +52,26 @@ func (c *nodeController) IsSynced(ctx context.Context) (bool, error) {
 	}
 }
 
+func (c *nodeController) WaitReady(ctx context.Context) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-c.node.Ready():
+		return nil
+	}
+}
+
+func (c *nodeController) IsReady(ctx context.Context) (bool, error) {
+	select {
+	case <-ctx.Done():
+		return false, ctx.Err()
+	case <-c.node.Ready():
+		return true, nil
+	default:
+		return false, nil
+	}
+}
+
 func (c *nodeController) UpgradeBinary(ctx context.Context, descriptor *upgrade.Descriptor) error {
 	return c.upgrader.SubmitDescriptor(ctx, descriptor)
 }

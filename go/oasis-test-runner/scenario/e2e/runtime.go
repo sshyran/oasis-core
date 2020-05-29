@@ -601,6 +601,49 @@ func (sc *runtimeImpl) waitNodesSynced() error {
 	return nil
 }
 
+func (sc *runtimeImpl) waitNodesReady() error {
+	ctx := context.Background()
+
+	checkReady := func(n *oasis.Node) error {
+		c, err := oasis.NewController(n.SocketPath())
+		if err != nil {
+			return fmt.Errorf("failed to create node controller: %w", err)
+		}
+		defer c.Close()
+
+		if err = c.WaitReady(ctx); err != nil {
+			return fmt.Errorf("failed to wait for node to be ready: %w", err)
+		}
+		return nil
+	}
+
+	sc.logger.Info("waiting for all nodes to be ready")
+
+	for _, n := range sc.net.Validators() {
+		if err := checkReady(&n.Node); err != nil {
+			return err
+		}
+	}
+	for _, n := range sc.net.StorageWorkers() {
+		if err := checkReady(&n.Node); err != nil {
+			return err
+		}
+	}
+	for _, n := range sc.net.ComputeWorkers() {
+		if err := checkReady(&n.Node); err != nil {
+			return err
+		}
+	}
+	for _, n := range sc.net.Clients() {
+		if err := checkReady(&n.Node); err != nil {
+			return err
+		}
+	}
+
+	sc.logger.Info("nodes ready")
+	return nil
+}
+
 func (sc *runtimeImpl) initialEpochTransitions() error {
 	ctx := context.Background()
 

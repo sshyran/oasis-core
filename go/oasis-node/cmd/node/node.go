@@ -166,6 +166,11 @@ func (n *Node) RequestShutdown() (<-chan struct{}, error) {
 	return n.RegistrationWorker.Quit(), nil
 }
 
+func (n *Node) Ready() <-chan struct{} {
+	// TODO
+	return make(chan struct{})
+}
+
 func (n *Node) RegistrationStopped() {
 	n.Stop()
 }
